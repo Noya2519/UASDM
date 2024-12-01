@@ -6,6 +6,7 @@ scikit-learn==1.2.0  # Make sure it uses pre-built wheels
 plotly==5.7.0
 seaborn==0.11.2
 matplotlib==3.6.0
+altair==4.2.2
 
 # Ensure build tools are included but avoid distutils
 setuptools>=65.5.0  # Ensure latest version of setuptools
