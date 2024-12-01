@@ -1,10 +1,12 @@
+# Specific versions of libraries
 streamlit==1.17.0
 pandas==1.5.0
-numpy==1.24.3
-scikit-learn==1.2.0
+numpy==1.24.3  # Use the pre-built wheel version, no need for distutils
+scikit-learn==1.2.0  # Make sure it uses pre-built wheels
 plotly==5.7.0
 seaborn==0.11.2
 matplotlib==3.6.0
-setuptools
-wheel
 
+# Ensure build tools are included but avoid distutils
+setuptools>=65.5.0  # Ensure latest version of setuptools
+wheel>=0.37.0  # Ensure latest version of wheel
