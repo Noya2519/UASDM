@@ -10,18 +10,14 @@ import plotly.express as px
 import seaborn as sns
 import matplotlib.pyplot as plt
 
-# Configure the page
 st.set_page_config(page_title="Data Analysis & ML App", layout="wide", page_icon="📊")
 
-# Predefined login credentials (You can change these to a secure method or database)
 USER_CREDENTIALS = {"username": "admin", "password": "admin123"}
 
-# Function to check login status
 def check_login():
     if 'logged_in' not in st.session_state:
         st.session_state['logged_in'] = False
 
-# Function to display login form
 def show_login_form():
     st.write("### Please log in to access the app")
     username = st.text_input("Username")
@@ -34,7 +30,6 @@ def show_login_form():
         else:
             st.error("Invalid username or password. Please try again.")
 
-# Sidebar navigation (Only shows if logged in)
 def show_sidebar():
     st.sidebar.title("Navigasi")
     option = st.sidebar.radio(
@@ -43,7 +38,6 @@ def show_sidebar():
     )
     return option
 
-# Reusable function to load datasets
 def load_dataset(upload_key):
     uploaded_file = st.file_uploader(f"Upload Dataset untuk {upload_key} (CSV)", type=["csv"], key=upload_key)
     if uploaded_file:
@@ -58,27 +52,21 @@ def load_dataset(upload_key):
         st.info(f"Silakan upload dataset untuk {upload_key}.")
         return None
 
-# Reusable function for handling missing values and ensuring the correct column shape
 def handle_missing_values(data):
     imputer = SimpleImputer(strategy="median")
     numerical_cols = data.select_dtypes(include=['float64', 'int64']).columns
     
-    # Identify columns that are completely empty
     empty_columns = [col for col in numerical_cols if data[col].isnull().all()]
     
-    # If there are columns that are empty, drop them
     if empty_columns:
         st.warning(f"Kolom kosong sepenuhnya akan dihapus: {empty_columns}")
         data = data.drop(columns=empty_columns)
         numerical_cols = [col for col in numerical_cols if col not in empty_columns]
     
-    # Perform imputation on numerical columns
     imputed_data = imputer.fit_transform(data[numerical_cols])
     
-    # Ensure that imputed data is aligned with the original dataset columns
     imputed_df = pd.DataFrame(imputed_data, columns=numerical_cols, index=data.index)
     
-    # Update the original dataset with imputed values for numerical columns
     data[numerical_cols] = imputed_df
     
     return data
@@ -87,9 +75,8 @@ def handle_missing_values(data):
 check_login()
 
 if not st.session_state['logged_in']:
-    show_login_form()  # Show login form if not logged in
+    show_login_form()  
 else:
-    # Once logged in, show the main content
     option = show_sidebar()
 
     if option == "📂 Data Preparation":
@@ -134,11 +121,9 @@ else:
             if st.checkbox("Tampilkan Statistik Deskriptif"):
                 st.write("### 📊 Statistik Deskriptif")
                 st.dataframe(data.describe())
-
-            # Replaced Pairplot with Scatter Matrix
+                
             if st.checkbox("Tampilkan Scatter Matrix"):
                 st.write("### 🔍 Scatter Matrix")
-                # Create a scatter matrix using Plotly for interactive visualizations
                 fig_scatter_matrix = px.scatter_matrix(
                     data, 
                     dimensions=data.select_dtypes(include=['float64', 'int64']).columns,  # Select numeric columns
@@ -217,7 +202,6 @@ else:
             X = features.select_dtypes(include=['float64', 'int64'])
             y = data[target]
 
-            # Using cross-validation to evaluate the model
             model = LogisticRegression(max_iter=1000, random_state=42)
             skf = StratifiedKFold(n_splits=5, shuffle=True, random_state=42)
             cross_val_scores = cross_val_score(model, X, y, cv=skf, scoring='accuracy')
@@ -226,7 +210,6 @@ else:
             st.metric("🎯 Akurasi Rata-rata", f"{np.mean(cross_val_scores):.2f}")
             st.text(f"📋 Scores dari tiap fold: {cross_val_scores}")
             
-            # Displaying the distribution of cross-validation results
             st.write("### 📊 Distribusi Skor Cross-Validation")
             fig_cv, ax = plt.subplots()
             ax.hist(cross_val_scores, bins=5, edgecolor='black')
